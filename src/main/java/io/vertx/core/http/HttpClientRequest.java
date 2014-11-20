@@ -23,6 +23,7 @@ import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
 
 /**
@@ -62,7 +63,7 @@ import io.vertx.core.streams.WriteStream;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface HttpClientRequest extends WriteStream<Buffer> {
+public interface HttpClientRequest extends WriteStream<Buffer>, ReadStream<HttpClientResponse> {
 
   @Override
   HttpClientRequest exceptionHandler(Handler<Throwable> handler);
@@ -75,6 +76,18 @@ public interface HttpClientRequest extends WriteStream<Buffer> {
 
   @Override
   HttpClientRequest drainHandler(Handler<Void> handler);
+
+  @Override
+  HttpClientRequest handler(Handler<HttpClientResponse> handler);
+
+  @Override
+  HttpClientRequest pause();
+
+  @Override
+  HttpClientRequest resume();
+
+  @Override
+  HttpClientRequest endHandler(Handler<Void> endHandler);
 
   /**
    * If chunked is true then the request will be set into HTTP chunked mode

@@ -44,6 +44,10 @@ public interface HttpClient extends Measured {
    */
   HttpClient exceptionHandler(Handler<Throwable> handler);
 
+  HttpClientRequest request(HttpMethod method, String absoluteURI);
+
+  HttpClientRequest request(HttpMethod method, int port, String host, String requestURI);
+
   HttpClientRequest request(HttpMethod method, String absoluteURI, Handler<HttpClientResponse> responseHandler);
 
   HttpClientRequest request(HttpMethod method, int port, String host, String requestURI, Handler<HttpClientResponse> responseHandler);
