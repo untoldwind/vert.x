@@ -94,7 +94,11 @@ public class HttpClientRequestImpl implements HttpClientRequest {
   public synchronized  HttpClientRequest handler(Handler<HttpClientResponse> handler) {
     if (handler != null) {
       respHandler = checkConnect(method, handler);
+      if (completed && conn != null) {
+        conn.endRequest();
+      }
     } else {
+      checkComplete();
       respHandler = null;
     }
     return this;
@@ -217,7 +221,6 @@ public class HttpClientRequestImpl implements HttpClientRequest {
 
   @Override
   public synchronized HttpClientRequest exceptionHandler(Handler<Throwable> handler) {
-    checkComplete();
     this.exceptionHandler = t -> {
       cancelOutstandingTimeoutTimer();
       handler.handle(t);
@@ -247,29 +250,31 @@ public class HttpClientRequestImpl implements HttpClientRequest {
   }
 
   @Override
-  public synchronized void end(String chunk) {
-    end(Buffer.buffer(chunk));
+  public synchronized HttpClientRequestImpl end(String chunk) {
+    return end(Buffer.buffer(chunk));
   }
 
   @Override
-  public synchronized void end(String chunk, String enc) {
+  public synchronized HttpClientRequestImpl end(String chunk, String enc) {
     Objects.requireNonNull(enc, "no null encoding accepted");
-    end(Buffer.buffer(chunk, enc));
+    return end(Buffer.buffer(chunk, enc));
   }
 
   @Override
-  public synchronized void end(Buffer chunk) {
+  public synchronized HttpClientRequestImpl end(Buffer chunk) {
     checkComplete();
     if (!chunked && !contentLengthSet()) {
       headers().set(io.vertx.core.http.HttpHeaders.CONTENT_LENGTH, String.valueOf(chunk.length()));
     }
     write(chunk.getByteBuf(), true);
+    return this;
   }
 
   @Override
-  public synchronized void end() {
+  public synchronized HttpClientRequestImpl end() {
     checkComplete();
     write(Unpooled.EMPTY_BUFFER, true);
+    return this;
   }
 
   @Override
@@ -321,7 +326,9 @@ public class HttpClientRequestImpl implements HttpClientRequest {
             continueHandler.handle(null);
           }
         } else {
-          respHandler.handle(resp);
+          if (respHandler != null) {
+            respHandler.handle(resp);
+          }
           if (endHandler != null) {
             endHandler.handle(null);
           }
@@ -467,9 +474,6 @@ public class HttpClientRequestImpl implements HttpClientRequest {
   }
 
   private synchronized void connect() {
-    if (respHandler == null) {
-      throw new UnsupportedOperationException("not yet implemented");
-    }
     if (!connecting) {
       // We defer actual connection until the first part of body is written or end is called
       // This gives the user an opportunity to set an exception handler before connecting so
@@ -516,7 +520,9 @@ public class HttpClientRequestImpl implements HttpClientRequest {
 
         if (conn.metrics().isEnabled()) conn.metrics().bytesWritten(conn.remoteAddress(), written);
 
-        conn.endRequest();
+        if (respHandler != null) {
+          conn.endRequest();
+        }
       } else {
         writeHeadWithContent(pending, false);
       }
@@ -527,7 +533,9 @@ public class HttpClientRequestImpl implements HttpClientRequest {
 
         if (conn.metrics().isEnabled()) conn.metrics().bytesWritten(conn.remoteAddress(), written);
 
-        conn.endRequest();
+        if (respHandler != null) {
+          conn.endRequest();
+        }
       } else {
         if (writeHead) {
           writeHead();
@@ -623,7 +631,9 @@ public class HttpClientRequestImpl implements HttpClientRequest {
       if (end) {
         if (conn.metrics().isEnabled()) conn.metrics().bytesWritten(conn.remoteAddress(), written);
 
-        conn.endRequest();
+        if (respHandler != null) {
+          conn.endRequest();
+        }
       }
     }
   }

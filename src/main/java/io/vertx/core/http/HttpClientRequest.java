@@ -185,18 +185,21 @@ public interface HttpClientRequest extends WriteStream<Buffer>, ReadStream<HttpC
   /**
    * Same as {@link #end(Buffer)} but writes a String with the default encoding
    */
-  void end(String chunk);
+  @Fluent
+  HttpClientRequest end(String chunk);
 
   /**
    * Same as {@link #end(Buffer)} but writes a String with the specified encoding
    */
-  void end(String chunk, String enc);
+  @Fluent
+  HttpClientRequest end(String chunk, String enc);
 
   /**
    * Same as {@link #end()} but writes some data to the request body before ending. If the request is not chunked and
    * no other data has been written then the Content-Length header will be automatically set
    */
-  void end(Buffer chunk);
+  @Fluent
+  HttpClientRequest end(Buffer chunk);
 
   /**
    * Ends the request. If no data has been written to the request body, and {@link #sendHead()} has not been called then
@@ -204,7 +207,8 @@ public interface HttpClientRequest extends WriteStream<Buffer>, ReadStream<HttpC
    * Once the request has ended, it cannot be used any more, and if keep alive is true the underlying connection will
    * be returned to the {@link HttpClient} pool so it can be assigned to another request.
    */
-  void end();
+  @Fluent
+  HttpClientRequest end();
 
   /**
     * Set's the amount of time after which if a response is not received TimeoutException()
