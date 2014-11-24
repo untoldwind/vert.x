@@ -146,7 +146,7 @@
             <id>default-compile</id>
             <configuration>
               <annotationProcessors>
-                <annotationProcessor>io.vertx.docgen.DocGenProcessor</annotationProcessor>
+                <annotationProcessor>io.vertx.docgen.JavaDocGenProcessor</annotationProcessor>
                 <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
               </annotationProcessors>
               <compilerArgs>
