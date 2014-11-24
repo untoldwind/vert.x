@@ -20,6 +20,10 @@
  * == The Event Bus
  *
  * include::{@link io.vertx.core.eventbus}[]
+ *
+ * == Buffers
+ *
+ * include::{@link io.vertx.core.buffer}[]
  */
 @Document
 @io.vertx.codegen.annotations.GenModule(name = "vertx")
