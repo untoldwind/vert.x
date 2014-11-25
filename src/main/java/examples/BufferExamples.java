@@ -38,10 +38,6 @@ public class BufferExamples {
     Buffer buff = Buffer.buffer("some-string", "UTF-16");
   }
 
-  public void createBufferFromBytes() {
-    Buffer buff = Buffer.buffer(new byte[] { 0,1,2 });
-  }
-
   public void createWithInitialSize() {
     Buffer buff = Buffer.buffer(100000);
   }

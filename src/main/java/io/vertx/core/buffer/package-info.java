@@ -44,13 +44,6 @@
  * {@link examples.BufferExamples#createBufferFromEncodedString()}
  * ----
  *
- * Create a buffer from a byte array
- *
- * [source,java]
- * ----
- * {@link examples.BufferExamples#createBufferFromBytes()}
- * ----
- *
  * Create a buffer with an initial size hint. If you know your buffer will have a certain amount of data written to
  * it you can create the buffer and specify this size. This makes the buffer initially allocate that much memory
  * and is more efficient than the buffer automatically resizing multiple times as data is written to it.
